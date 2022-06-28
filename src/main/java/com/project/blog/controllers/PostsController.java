@@ -36,7 +36,6 @@ public class PostsController {
 	
 	@GetMapping
 	public List<Posts> getAllPosts(){
-		
 		return postsService.getAllPosts();
 	}
 	

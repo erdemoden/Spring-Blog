@@ -10,7 +10,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "user")
@@ -25,7 +28,6 @@ public class User {
 	String Password;
 	
 	@OneToMany(mappedBy="user",cascade = {CascadeType.REMOVE,CascadeType.ALL})
-	
 	List<Likes> likes;
 	
 	@OneToMany(mappedBy = "user",cascade = {CascadeType.ALL,CascadeType.REMOVE})

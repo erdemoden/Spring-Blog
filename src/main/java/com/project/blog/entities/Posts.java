@@ -4,7 +4,12 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "posts")
@@ -23,6 +28,7 @@ public class Posts {
 	
 	@ManyToOne(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
 	@JoinColumn(name="userid")
+	@JsonIgnore
 	User user;
 	
 	@OneToMany(mappedBy = "posts",cascade = {CascadeType.ALL})
