@@ -29,6 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	        return new BCryptPasswordEncoder();
 	    }
 	 @Bean(BeanIds.AUTHENTICATION_MANAGER)
+	 @Override
 	 public AuthenticationManager authenticationManagerBean() throws Exception {
 		 return super.authenticationManagerBean();
 	 }
@@ -38,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	}
 	
 	@Bean
-	public JwtAuthenticationFilter jwtAuthenticationFilter() {
+	public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
 		return new JwtAuthenticationFilter();
 	}
 	@Bean 
@@ -46,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
-		config.addAllowedOrigin("*");
+		config.addAllowedOrigin("http://localhost:3000");
 		config.addAllowedHeader("*");
 		config.addAllowedMethod("OPTIONS");
 		config.addAllowedMethod("HEAD");

@@ -6,4 +6,5 @@ import lombok.Data;
 public class AuthResponse {
 	boolean isCreated;
 	String accessToken;
+	String error;
 }
