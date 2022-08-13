@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	MyUserDetailsService myUserDetailsService;
 	
 	
-
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -59,4 +59,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		return null;
 	}
 
+	
 }

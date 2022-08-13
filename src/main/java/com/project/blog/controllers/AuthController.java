@@ -6,9 +6,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.blog.entities.User;
@@ -78,5 +80,12 @@ public AuthResponse register(@RequestBody AuthRequest auth) {
 	return response;
 }
 
+@GetMapping("/route")
+public AuthResponse route() {
+	AuthResponse authResponse = new AuthResponse();
+	authResponse.setRoute("/");
+	return authResponse;
+	
+}
 
 }
