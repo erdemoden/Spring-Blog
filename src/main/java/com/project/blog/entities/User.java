@@ -25,7 +25,8 @@ public class User {
 	 Long id;
 	
 	String username;
-	String Password;
+	String password;
+	String email;
 	
 	@OneToMany(mappedBy="user",cascade = {CascadeType.REMOVE,CascadeType.ALL})
 	List<Likes> likes;

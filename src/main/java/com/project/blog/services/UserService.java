@@ -40,6 +40,10 @@ public class UserService {
 		return userRepository.findByUsername(username);
 	}
 	
+	public User findByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
+	
 	public void deleteUserById(long id) {
 		try {
 		userRepository.deleteById(id);
@@ -47,5 +51,9 @@ public class UserService {
 		catch(EmptyResultDataAccessException e) {
 			System.out.println("merhaba");
 		}
+	}
+	
+	public void checkMail(String mail) {
+		
 	}
 }

@@ -27,6 +27,7 @@ public class UserController {
 	public String merhaba() {
 		return "Hello";
 	}
+	
 	@GetMapping
 	public List<User>getAllUsers(){
 		return userService.getAllUsers();
@@ -34,8 +35,10 @@ public class UserController {
 	
 	@PostMapping("/save")
 	public void saveUser(@RequestBody User user) {
-		userService.save(user);
+		userService.checkMail(user.getEmail());
+		//userService.save(user);
 	}
+	
 	@GetMapping("/delete/{id}")
 	public void deleteUser(@PathVariable long id) {
 		userService.deleteUserById(id);

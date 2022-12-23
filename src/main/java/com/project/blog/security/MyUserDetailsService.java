@@ -29,6 +29,15 @@ public class MyUserDetailsService implements UserDetailsService{
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 	
 		User user = userRepo.findByUsername(userName);
+		if(user==null) {
+			user = userRepo.findByEmail(userName);
+		}
+		return JwtUserDetails.create(user);
+	}
+	
+	public UserDetails loadUserByEmail(String eMail) throws UsernameNotFoundException {
+		
+		User user = userRepo.findByEmail(eMail);
 		return JwtUserDetails.create(user);
 	}
 	
