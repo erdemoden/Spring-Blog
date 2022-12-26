@@ -28,10 +28,12 @@ public AuthResponse beforeLogin(@RequestBody AuthRequest auth) {
 	return authService.beforeLogin(auth);
 	
 }
-@PostMapping("loginwithmail")
+
+@PostMapping("/loginwithmail")
 public AuthResponse loginWithMail(@RequestBody MailKey key) {
 	return authService.loginWithMail(key);
 }
+
 @PostMapping("/beforeregister")
 public AuthResponse beforeRegister(@RequestBody AuthRequest auth) {
 	return authService.beforeRegisteration(auth);

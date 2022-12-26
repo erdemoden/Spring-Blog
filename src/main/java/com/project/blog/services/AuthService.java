@@ -2,6 +2,7 @@ package com.project.blog.services;
 
 import java.util.Random;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -66,8 +67,8 @@ public class AuthService {
 	public AuthResponse loginWithMail(MailKey key) {
 		User user = new User();
 		AuthResponse response = new AuthResponse();
-		if(redisCacheStore.get(key)!=null) {
-			user = (User) redisCacheStore.get(key);
+		if(redisCacheStore.get(key.getKey())!=null) {
+			user = (User) redisCacheStore.get(key.getKey());
 			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			String jwtToken = jwtTokenProvider.generateJwtToken(authentication);
@@ -81,7 +82,6 @@ public class AuthService {
 		
 	}
 	
-	//Async olacak gibi
 	public AuthResponse beforeRegisteration(AuthRequest auth) {
 		AuthResponse response = new AuthResponse();
 		if(userService.findByUserName(auth.getUsername())!=null) {
@@ -97,7 +97,7 @@ public class AuthService {
 		User user = new User();
 		user.setEmail(auth.getEmail());
 		user.setUsername(auth.getUsername());
-		user.setPassword(passwordEncoder.encode(auth.getPassword()));
+		user.setPassword(auth.getPassword());
 		String key = createMailKey(user);
 		emailService.sendEmail(user.getEmail(),"Vertification Code","Your Vertification Code : "+key);
 		response.setCreated(true);
@@ -106,17 +106,27 @@ public class AuthService {
 	
 	public AuthResponse registerWithMail(MailKey key) {
 		User user = new User();
+		User myUser = new User();
 		AuthResponse response = new AuthResponse();
-		if(redisCacheStore.get(key)!=null) {
-			user = (User) redisCacheStore.get(key);
-			userService.save(user);
-			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword());
-			Authentication authManager = authenticationManager.authenticate(authToken);
-			SecurityContextHolder.getContext().setAuthentication(authManager);
-			String jwtToken = jwtTokenProvider.generateJwtToken(authManager);
+		if(redisCacheStore.get(key.getKey())!=null) {
+			try {
+			user  = (User) redisCacheStore.get(key.getKey());
+			myUser.setUsername(user.getUsername());
+			myUser.setEmail(user.getEmail());
+			myUser.setPassword(passwordEncoder.encode(user.getPassword()));
+			userService.save(myUser);
+			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			String jwtToken = jwtTokenProvider.generateJwtToken(authentication);
 			response.setCreated(true);
 			response.setAccessToken("Bearer "+jwtToken);
 			return response;
+			}
+			catch (Exception e) {
+				response.setCreated(false);
+				response.setError("Your Name Or Password Is Wrong Please Check Them");
+				return response;
+			}
 		}
 		response.setCreated(false);
 		response.setError("Your Mail Vertification Key Is Wrong");
