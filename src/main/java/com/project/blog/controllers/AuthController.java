@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.blog.configs.RedisCacheStore;
 import com.project.blog.requests.AuthRequest;
+import com.project.blog.requests.AuthRequestLogin;
 import com.project.blog.requests.MailKey;
 import com.project.blog.responses.AuthResponse;
 import com.project.blog.services.AuthService;
@@ -24,14 +25,14 @@ private final AuthService authService;
 private final RedisCacheStore redisCacheStore;
 
 @PostMapping("/beforelogin")
-public AuthResponse beforeLogin(@RequestBody AuthRequest auth) {
-	return authService.beforeLogin(auth);
+public AuthResponse beforeLogin(@RequestBody AuthRequestLogin auth) {
+	return authService.loginSendMail(auth);
 	
 }
 
 @PostMapping("/loginwithmail")
 public AuthResponse loginWithMail(@RequestBody MailKey key) {
-	return authService.loginWithMail(key);
+	return authService.checkMail(key);
 }
 
 @PostMapping("/beforeregister")

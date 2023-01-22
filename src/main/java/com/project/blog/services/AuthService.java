@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.project.blog.configs.RedisCacheStore;
 import com.project.blog.entities.User;
 import com.project.blog.requests.AuthRequest;
+import com.project.blog.requests.AuthRequestLogin;
 import com.project.blog.requests.MailKey;
 import com.project.blog.responses.AuthResponse;
 import com.project.blog.security.JwtTokenProvider;
@@ -43,43 +44,52 @@ public class AuthService {
 	    
 	    return generatedString;
 	}
-	// Async olacak gibi
-	public AuthResponse beforeLogin(AuthRequest auth) {
-		try {
-			AuthResponse response = new AuthResponse();
-			response.setCreated(true);
-			User user = new User();
-			user.setEmail(auth.getEmail());
-			user.setUsername(auth.getUsername());
-			user.setPassword(auth.getPassword());
-			String key = createMailKey(user);
-			emailService.sendEmail(user.getEmail(),"Vertification Code","Your Vertification Code : "+key);
-			return response;
-		}
-		catch(Exception e) {
-			AuthResponse response = new AuthResponse();
-			response.setCreated(false);
-			response.setError("Your Name Or Password Is Wrong Please Check Them");
-			return response;
-		}
-	}
-	
-	public AuthResponse loginWithMail(MailKey key) {
-		User user = new User();
+	public AuthResponse checkMail(MailKey key) {
+		User user  = new User();
 		AuthResponse response = new AuthResponse();
 		if(redisCacheStore.get(key.getKey())!=null) {
-			user = (User) redisCacheStore.get(key.getKey());
-			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
+			user  = (User) redisCacheStore.get(key.getKey());
+			if(user == null) {
+				response.setCreated(false);
+				return response;
+			}
+			response.setCreated(true);
+			return response;
+		}
+		response.setError("Your Code Is Wrong");
+		response.setCreated(false);
+		return response;
+		
+	}
+	
+	public AuthResponse loginSendMail(AuthRequestLogin auth) {
+		User user = new User();
+		boolean mailCheck = false;
+		AuthResponse response = new AuthResponse();
+		try {
+			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(auth.getMailOrEmail(),auth.getPassword()));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			String jwtToken = jwtTokenProvider.generateJwtToken(authentication);
 			response.setCreated(true);
 			response.setAccessToken("Bearer "+jwtToken);
+			if(userService.findByEmail(auth.getMailOrEmail())!=null) {
+				user = userService.findByEmail(auth.getMailOrEmail());
+				String key = createMailKey(user);
+				emailService.sendEmail(user.getEmail(),"Vertification Code","Your Vertification Code : "+key);
+				createMailKey(user);
+			}
+			else {
+				user = userService.findByUserName(auth.getMailOrEmail());
+				String key = createMailKey(user);
+				emailService.sendEmail(user.getEmail(),"Vertification Code","Your Vertification Code : "+key);
+			}
 			return response;
 		}
-		response.setCreated(false);
-		response.setError("Your Mail Vertification Key Is Wrong");
-		return response;
-		
+		catch(Exception e) {
+			response.setCreated(false);
+			response.setError("Your Name Or Password Is Wrong Please Check Them");
+			return response;
+		}
 	}
 	
 	public AuthResponse beforeRegisteration(AuthRequest auth) {
