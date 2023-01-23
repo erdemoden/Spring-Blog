@@ -64,7 +64,6 @@ public class AuthService {
 	
 	public AuthResponse loginSendMail(AuthRequestLogin auth) {
 		User user = new User();
-		boolean mailCheck = false;
 		AuthResponse response = new AuthResponse();
 		try {
 			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(auth.getMailOrEmail(),auth.getPassword()));
