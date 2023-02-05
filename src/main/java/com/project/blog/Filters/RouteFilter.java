@@ -54,9 +54,9 @@ public class RouteFilter implements Filter {
 		
 		AuthResponse authResponse = new AuthResponse();
 		String jwt = extractJwtFromRequest(httpRequest);
-		 
+		String route = httpRequest.getHeader("Route");
 		if(jwt!=null&&StringUtils.hasText(jwt)&&jwtTokenProvider.validateToken(jwt) == true) {
-			authResponse.setRoute("/homepage");
+			authResponse.setRoute(route);
 			long id = jwtTokenProvider.getUserIdFromJwt(jwt);
 			User user = userService.findById(id);
 			authResponse.setUsername(user.getUsername());
