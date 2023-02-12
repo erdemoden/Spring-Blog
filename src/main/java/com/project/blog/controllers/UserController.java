@@ -3,6 +3,8 @@ package com.project.blog.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import com.project.blog.entities.User;
@@ -48,6 +50,11 @@ public class UserController {
 	@PostMapping("/userpic")
 	public void saveUserPic(@RequestParam MultipartFile userpic,@RequestHeader String Authorization){
 		userService.saveUserPic(userpic,Authorization);
+		//System.out.println(userpic.getContentType().toString().substring(userpic.getContentType().toString().lastIndexOf("/")+1));
+	}
+	@GetMapping(value ="/getphoto",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public FileSystemResource getFile(@RequestParam String location){
+		return userService.getFile(location);
 	}
 
 }

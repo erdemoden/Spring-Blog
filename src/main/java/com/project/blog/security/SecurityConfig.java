@@ -55,7 +55,7 @@ public class SecurityConfig{
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
-		config.addAllowedOrigin("http://192.168.0.23:3000");
+		config.addAllowedOrigin("http://192.168.0.18:3000");
 		config.addAllowedHeader("*");
 		config.addAllowedMethod("*");
 		config.addAllowedMethod("OPTIONS");
@@ -71,15 +71,17 @@ public class SecurityConfig{
 	@Bean
 	public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
 		http
-		.cors()
-		.and()
-		.csrf().disable()
-		.authorizeRequests()
-		.antMatchers("/auth/**")
-		.permitAll()
-		.anyRequest()
-		.authenticated();
-		http.addFilterBefore(jwtAuthenticationFilter(),UsernamePasswordAuthenticationFilter.class);
+				.cors()
+				.and()
+				.csrf().disable()
+				.authorizeRequests()
+				.antMatchers("/auth/**")
+				.permitAll()
+				.antMatchers("/user/getphoto")
+				.permitAll()
+				.anyRequest()
+				.authenticated();
+				http.addFilterBefore(jwtAuthenticationFilter(),UsernamePasswordAuthenticationFilter.class);
 		
 		return http.build();
 	}

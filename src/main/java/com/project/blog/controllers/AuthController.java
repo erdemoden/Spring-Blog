@@ -55,7 +55,7 @@ public AuthResponse route() {
 
 @GetMapping("/deneme")
 public void deneme() {
-	redisCacheStore.put("merhaba", "deneme", 60);
+	redisCacheStore.put("merhaba", "deneme.HEIC", 60);
 	System.out.println(redisCacheStore.get("merhaba"));
 	emailService.sendEmail("erdemoden5@gmail.com","Vertification Code","bsdcncbjsfrp");
 	

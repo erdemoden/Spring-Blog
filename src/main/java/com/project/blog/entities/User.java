@@ -27,7 +27,7 @@ public class User {
 	String username;
 	String password;
 	String email;
-	
+	String userphoto;
 	@OneToMany(mappedBy="user",cascade = {CascadeType.REMOVE,CascadeType.ALL})
 	List<Likes> likes;
 	
