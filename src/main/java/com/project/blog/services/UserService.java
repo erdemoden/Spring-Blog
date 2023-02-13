@@ -1,5 +1,6 @@
 package com.project.blog.services;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,21 +63,37 @@ public class UserService {
 	public PictureResponse saveUserPic(MultipartFile userpic, String Authorization){
 		String path = System.getProperty("user.dir") + "/";
 		PictureResponse pictureResponse = new PictureResponse();
-		String bearer = extractJwtFromString(Authorization);
-		long id = jwtTokenProvider.getUserIdFromJwt(bearer);
-		Optional<User> user = userRepository.findById(id);
-		String fileName = user.get().getUsername();
-		String extension = userpic.getContentType().toString().substring(userpic.getContentType().toString().lastIndexOf("/")+1);
-		Path saveTo = Paths.get(path,fileName+"."+extension);
-		try {
-			Files.copy(userpic.getInputStream(),saveTo);
-			userRepository.updatePhoto(String.valueOf(saveTo),id);
-			pictureResponse.setPicPath(saveTo.toString());
-			return pictureResponse;
+		Optional<User> user = getUserFromAuth(Authorization);
+		String check = checkPicture(Authorization);
+		if(check.equals("error")) {
+			String fileName = user.get().getUsername();
+			String extension = userpic.getContentType().toString().substring(userpic.getContentType().toString().lastIndexOf("/") + 1);
+			Path saveTo = Paths.get(path, fileName + "." + extension);
+			try {
+				Files.copy(userpic.getInputStream(), saveTo);
+				userRepository.updatePhoto(String.valueOf(saveTo),user.get().getId());
+				pictureResponse.setPicPath(saveTo.toString());
+				return pictureResponse;
+			} catch (IOException e) {
+				pictureResponse.setError("Something Went Wrong");
+				return pictureResponse;
+			}
 		}
-		catch (IOException e) {
-			pictureResponse.setError("Something Went Wrong");
-			return pictureResponse;
+		else{
+			File myFile =  new File(check);
+			myFile.delete();
+			String fileName = user.get().getUsername();
+			String extension = userpic.getContentType().toString().substring(userpic.getContentType().toString().lastIndexOf("/") + 1);
+			Path saveTo = Paths.get(path, fileName + "." + extension);
+			try {
+				Files.copy(userpic.getInputStream(), saveTo);
+				userRepository.updatePhoto(String.valueOf(saveTo),user.get().getId());
+				pictureResponse.setPicPath(saveTo.toString());
+				return pictureResponse;
+			} catch (IOException e) {
+				pictureResponse.setError("Something Went Wrong");
+				return pictureResponse;
+			}
 		}
 	}
 	public FileSystemResource getFile(String location){
@@ -85,6 +102,21 @@ public class UserService {
 		} catch (Exception e) {
 			// Handle access or file not found problems.
 			throw new RuntimeException();
+		}
+	}
+	public Optional<User> getUserFromAuth(String Authorization){
+		String bearer = extractJwtFromString(Authorization);
+		long id = jwtTokenProvider.getUserIdFromJwt(bearer);
+		Optional<User> user = userRepository.findById(id);
+		return user;
+	}
+	public String checkPicture(String Authorization){
+		Optional<User> user = getUserFromAuth(Authorization);
+		if(user.get().getUserphoto()!=null){
+			return user.get().getUserphoto();
+		}
+		else{
+			return "error";
 		}
 	}
 	public void checkMail(String mail) {

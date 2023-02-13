@@ -2,6 +2,7 @@ package com.project.blog.controllers;
 
 import java.util.List;
 
+import com.project.blog.responses.PictureResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
@@ -48,13 +49,23 @@ public class UserController {
 	}
 
 	@PostMapping("/userpic")
-	public void saveUserPic(@RequestParam MultipartFile userpic,@RequestHeader String Authorization){
-		userService.saveUserPic(userpic,Authorization);
+	public PictureResponse saveUserPic(@RequestParam MultipartFile userpic, @RequestHeader String Authorization){
+		return userService.saveUserPic(userpic,Authorization);
 		//System.out.println(userpic.getContentType().toString().substring(userpic.getContentType().toString().lastIndexOf("/")+1));
 	}
 	@GetMapping(value ="/getphoto",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public FileSystemResource getFile(@RequestParam String location){
 		return userService.getFile(location);
 	}
-
+	@GetMapping("/checkpicture")
+	public PictureResponse checkPicture(@RequestHeader String Authorization){
+		String check = userService.checkPicture(Authorization);
+		PictureResponse pictureResponse = new PictureResponse();
+		if(check.equals("error")) {
+			pictureResponse.setError(check);
+			return pictureResponse;
+		}
+		pictureResponse.setPicPath(check);
+		return pictureResponse;
+	}
 }
