@@ -8,10 +8,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,6 +56,7 @@ public class RouteFilter implements Filter {
 			long id = jwtTokenProvider.getUserIdFromJwt(jwt);
 			User user = userService.findById(id);
 			authResponse.setUsername(user.getUsername());
+			authResponse.setLocation(user.getUserphoto());
 			mapper.writeValue(response.getOutputStream(), authResponse);
 		}
 		chain.doFilter(httpRequest, response);

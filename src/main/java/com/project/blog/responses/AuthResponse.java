@@ -9,4 +9,5 @@ public class AuthResponse {
 	String error;
 	String route;
 	String username;
+	String location;
 }

@@ -50,7 +50,6 @@ public AuthResponse route() {
 	AuthResponse authResponse = new AuthResponse();
 	authResponse.setRoute("/");
 	return authResponse;
-	
 }
 
 @GetMapping("/deneme")
