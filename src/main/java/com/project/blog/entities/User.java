@@ -2,13 +2,7 @@ package com.project.blog.entities;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -33,5 +27,14 @@ public class User {
 	
 	@OneToMany(mappedBy = "user",cascade = {CascadeType.ALL,CascadeType.REMOVE})
 	List<Posts> posts;
+
+	@OneToMany(mappedBy = "owner",cascade={CascadeType.ALL})
+	List<Blogs> ownerBlogs;
+
+	@ManyToMany(mappedBy = "admins",fetch = FetchType.LAZY,cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+	List<Blogs> adminBlogs;
+
+	@ManyToMany(mappedBy = "followers",fetch = FetchType.LAZY,cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+	List<Blogs> followerBlogs;
 }
  

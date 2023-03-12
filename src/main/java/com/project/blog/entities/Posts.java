@@ -17,23 +17,26 @@ import lombok.Setter;
 public class Posts {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	long id;
-	
+
 	String title;
-	
+
 	@Lob
 	@Column(columnDefinition = "text")
 	String post;
-	
-	@ManyToOne(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
-	@JoinColumn(name="userid")
+
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = "userid")
 	@JsonIgnore
 	User user;
-	
-	@OneToMany(mappedBy = "posts",cascade = {CascadeType.ALL})
-	
+
+	@OneToMany(mappedBy = "posts", cascade = {CascadeType.ALL})
 	List<Likes> likes;
-	
+
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinColumn(name = "blogid")
+	@JsonIgnore
+	Blogs blogs;
 }
  
