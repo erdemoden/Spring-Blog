@@ -26,6 +26,7 @@ private final RedisCacheStore redisCacheStore;
 
 @PostMapping("/beforelogin")
 public AuthResponse beforeLogin(@RequestBody AuthRequestLogin auth) {
+	System.out.println(auth.getMailOrEmail());
 	return authService.loginSendMail(auth);
 	
 }

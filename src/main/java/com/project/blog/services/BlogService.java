@@ -10,29 +10,31 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class BlogService {
     private final BlogsRepository blogsRepository;
     private final UserRepository userRepository;
-    public void saveBlog(BlogCreateRequest blogCreateRequest){
-        User user = userRepository.findById(blogCreateRequest.getOwner()).orElse(null);
-        List<Blogs> followerblogs = null;
+    private final UserService userService;
+    public void saveBlog(BlogCreateRequest blogCreateRequest,String authorization){
+        Optional<User> user = userService.getUserFromAuth(authorization);
         List<User> followers = new LinkedList<>();
-        followerblogs = user.getFollowerBlogs();
         Blogs blogs = new Blogs();
         blogs.setSubject(blogCreateRequest.getSubject());
         blogs.setTitle(blogCreateRequest.getTitle());
-        blogs.setOwner(user);
-        followerblogs.add(blogs);
-        user.setFollowerBlogs(followerblogs);
-        followers.add(user);
+        blogs.setOwner(user.get());
+        followers.add(user.get());
         blogs.setFollowers(followers);
-        userRepository.save(user);
+        blogsRepository.save(blogs);
     }
     public  void deleteBlog(long blogid){
         Blogs blogs = blogsRepository.findById(blogid).orElse(null);
         blogsRepository.delete(blogs);
+    }
+    public List<Blogs> findByUser(long userid){
+        User user = userRepository.findById(userid).orElse(null);
+        return user.getFollowerBlogs();
     }
 }

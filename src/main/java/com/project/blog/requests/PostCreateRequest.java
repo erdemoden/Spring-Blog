@@ -9,5 +9,5 @@ public class PostCreateRequest {
 	String title;
 	String post;
 	Long userid;
-	
+	Long blogid;
 }

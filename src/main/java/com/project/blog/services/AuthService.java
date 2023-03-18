@@ -30,7 +30,7 @@ public class AuthService {
 	private final UserService userService;
 	private final RedisCacheStore redisCacheStore;
 	private final EmailService emailService;
-	
+
 	public String createRandomString() {
 		int leftLimit = 97; // letter 'a'
 	    int rightLimit = 122; // letter 'z'
@@ -48,7 +48,7 @@ public class AuthService {
 		User user  = new User();
 		AuthResponse response = new AuthResponse();
 		if(redisCacheStore.get(key.getKey())!=null) {
-			user  = (User) redisCacheStore.get(key.getKey());
+			user  = userService.findById((Long) redisCacheStore.get(key.getKey()));
 			if(user == null) {
 				response.setCreated(false);
 				return response;
@@ -63,7 +63,7 @@ public class AuthService {
 	}
 	
 	public AuthResponse loginSendMail(AuthRequestLogin auth) {
-		User user = new User();
+		User user;
 		AuthResponse response = new AuthResponse();
 		try {
 			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(auth.getMailOrEmail(),auth.getPassword()));
@@ -73,13 +73,13 @@ public class AuthService {
 			response.setAccessToken("Bearer "+jwtToken);
 			if(userService.findByEmail(auth.getMailOrEmail())!=null) {
 				user = userService.findByEmail(auth.getMailOrEmail());
-				String key = createMailKey(user);
+				String key = createMailKey(user.getId());
 				emailService.sendEmail(user.getEmail(),"Vertification Code","Your Vertification Code : "+key);
-				createMailKey(user);
+				//createMailKey(user);
 			}
 			else {
 				user = userService.findByUserName(auth.getMailOrEmail());
-				String key = createMailKey(user);
+				String key = createMailKey(user.getId());
 				emailService.sendEmail(user.getEmail(),"Vertification Code","Your Vertification Code : "+key);
 			}
 			return response;
@@ -107,7 +107,7 @@ public class AuthService {
 		user.setEmail(auth.getEmail());
 		user.setUsername(auth.getUsername());
 		user.setPassword(auth.getPassword());
-		String key = createMailKey(user);
+		String key = createMailKey(user.getId());
 		emailService.sendEmail(user.getEmail(),"Vertification Code","Your Vertification Code : "+key);
 		response.setCreated(true);
 		return response;
@@ -119,7 +119,7 @@ public class AuthService {
 		AuthResponse response = new AuthResponse();
 		if(redisCacheStore.get(key.getKey())!=null) {
 			try {
-			user  = (User) redisCacheStore.get(key.getKey());
+			user  = userService.findById((Long) redisCacheStore.get(key.getKey()));
 			myUser.setUsername(user.getUsername());
 			myUser.setEmail(user.getEmail());
 			myUser.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -142,9 +142,9 @@ public class AuthService {
 		return response;
 	}
 	
-	public String createMailKey(User user) {
+	public String createMailKey(Long userid) {
 		String randomString = createRandomString();
-		redisCacheStore.put(randomString,user,90);
+		redisCacheStore.put(randomString,userid,90);
 		return randomString;
 	}
 }

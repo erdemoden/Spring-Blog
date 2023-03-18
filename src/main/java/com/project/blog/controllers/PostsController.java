@@ -27,7 +27,7 @@ public class PostsController {
 		this.postsService = postsService;
 	}
 
-	@PostMapping
+	@PostMapping("/save")
 	public Posts savePost(@RequestBody PostCreateRequest postReq) {
 		
 		return postsService.createOnePost(postReq);

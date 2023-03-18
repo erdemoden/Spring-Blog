@@ -15,8 +15,4 @@ public class BlogCreateRequest {
     @NotNull(message = "Subject Field Is Required")
     @Size(max = 350,message = "Subject Field Can Not Be More Than 350 Characters")
     private String subject;
-    @NotNull(message = "Owner Of Blog Can Not Be Null")
-    private long owner;
-    @NotNull(message = "Follower Of The Blog Can Not Be Null")
-    private long follower;
 }

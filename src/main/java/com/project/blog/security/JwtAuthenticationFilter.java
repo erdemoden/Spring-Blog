@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.blog.responses.AuthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,12 +28,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
 	@Autowired 
 	MyUserDetailsService myUserDetailsService;
-	
-	
+
+
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		AuthResponse authResponse = new AuthResponse();
 		try {
 			String jwtToken = extractJwtFromRequest(request);
 			if(StringUtils.hasText(jwtToken) && jwtTokenProvider.validateToken(jwtToken)) {
@@ -43,10 +47,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 					SecurityContextHolder.getContext().setAuthentication(auth);
 					
 				}
+				else{
+					authResponse.setRoute("/");
+					mapper.writeValue(response.getOutputStream(), authResponse);
+				}
+			}
+			else{
+				authResponse.setRoute("/");
+				mapper.writeValue(response.getOutputStream(), authResponse);
 			}
 		}
 		catch(Exception e) {
-			return;
+			authResponse.setRoute("/");
+			mapper.writeValue(response.getOutputStream(), authResponse);
+			filterChain.doFilter(request,response);
 		}
 		filterChain.doFilter(request, response);
 	}
@@ -59,5 +73,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		return null;
 	}
 
-	
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+		return request.getRequestURI().startsWith("/auth/")
+				|| request.getRequestURI().startsWith("/blogs/")
+				|| request.getRequestURI().startsWith("/user/getphoto");
+	}
 }
+

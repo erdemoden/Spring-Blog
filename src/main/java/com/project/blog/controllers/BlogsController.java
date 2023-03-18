@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -14,11 +15,16 @@ import javax.validation.Valid;
 public class BlogsController {
     private final BlogService blogService;
     @PostMapping("/save")
-    public void saveBlogs(@RequestBody @Valid BlogCreateRequest blogCreateRequest){
-        blogService.saveBlog(blogCreateRequest);
+    public void saveBlogs(@RequestBody @Valid BlogCreateRequest blogCreateRequest,@RequestHeader String Authorization){
+        blogService.saveBlog(blogCreateRequest,Authorization);
     }
     @GetMapping("/delete")
     public void deleteBlogs(@RequestParam long id){
         blogService.deleteBlog(id);
+    }
+
+    @GetMapping("/getblogs")
+    public List<Blogs> blogsWithUserId(@RequestParam long userid){
+        return blogService.findByUser(userid);
     }
 }
