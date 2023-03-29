@@ -15,8 +15,8 @@ import java.util.List;
 public class BlogsController {
     private final BlogService blogService;
     @PostMapping("/save")
-    public void saveBlogs(@RequestBody @Valid BlogCreateRequest blogCreateRequest,@RequestHeader String Authorization){
-        blogService.saveBlog(blogCreateRequest,Authorization);
+    public Blogs saveBlogs(@RequestBody @Valid BlogCreateRequest blogCreateRequest,@RequestHeader String Authorization){
+        return blogService.saveBlog(blogCreateRequest,Authorization);
     }
     @GetMapping("/delete")
     public void deleteBlogs(@RequestParam long id){

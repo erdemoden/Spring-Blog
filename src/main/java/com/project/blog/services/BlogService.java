@@ -18,7 +18,7 @@ public class BlogService {
     private final BlogsRepository blogsRepository;
     private final UserRepository userRepository;
     private final UserService userService;
-    public void saveBlog(BlogCreateRequest blogCreateRequest,String authorization){
+    public Blogs saveBlog(BlogCreateRequest blogCreateRequest,String authorization){
         Optional<User> user = userService.getUserFromAuth(authorization);
         List<User> followers = new LinkedList<>();
         Blogs blogs = new Blogs();
@@ -28,6 +28,7 @@ public class BlogService {
         followers.add(user.get());
         blogs.setFollowers(followers);
         blogsRepository.save(blogs);
+        return blogs;
     }
     public  void deleteBlog(long blogid){
         Blogs blogs = blogsRepository.findById(blogid).orElse(null);
