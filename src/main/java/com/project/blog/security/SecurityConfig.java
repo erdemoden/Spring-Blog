@@ -1,6 +1,7 @@
 package com.project.blog.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +27,8 @@ public class SecurityConfig{
 
 	@Autowired
 	private MyUserDetailsService myUserDetailsService;
-	
+	@Value("${blog.app.front}")
+	private String url;
 	
 	 @Bean
 	 public PasswordEncoder passwordEncoder() {
@@ -55,7 +57,7 @@ public class SecurityConfig{
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
-		config.addAllowedOrigin("http://192.168.0.18:3000");
+		config.addAllowedOrigin(url);
 		config.addAllowedHeader("*");
 		config.addAllowedMethod("*");
 		config.addAllowedMethod("OPTIONS");
