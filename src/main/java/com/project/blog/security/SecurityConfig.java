@@ -29,7 +29,6 @@ public class SecurityConfig{
 	private MyUserDetailsService myUserDetailsService;
 	@Value("${blog.app.front}")
 	private String url;
-	
 	 @Bean
 	 public PasswordEncoder passwordEncoder() {
 	        return new BCryptPasswordEncoder();
@@ -54,6 +53,9 @@ public class SecurityConfig{
 	}
 	@Bean 
 	public CorsFilter corsFilter() {
+		 if(System.getenv("BLOG_APP_FRONT")!=null && !System.getenv("BLOG_APP_FRONT").isEmpty()){
+			 url = System.getenv("BLOG_APP_FRONT");
+		 }
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
