@@ -107,19 +107,20 @@ public class AuthService {
 		user.setEmail(auth.getEmail());
 		user.setUsername(auth.getUsername());
 		user.setPassword(auth.getPassword());
-		String key = createMailKey(user.getId());
+		System.out.println("username :  "+user.getUsername());
+		String key = createMailkeyWithUserName(user);
 		emailService.sendEmail(user.getEmail(),"Vertification Code","Your Vertification Code : "+key);
 		response.setCreated(true);
 		return response;
 	}
 	
 	public AuthResponse registerWithMail(MailKey key) {
-		User user = new User();
+		User user;
 		User myUser = new User();
 		AuthResponse response = new AuthResponse();
 		if(redisCacheStore.get(key.getKey())!=null) {
 			try {
-			user  = userService.findById((Long) redisCacheStore.get(key.getKey()));
+			user  = (User) redisCacheStore.get(key.getKey());
 			myUser.setUsername(user.getUsername());
 			myUser.setEmail(user.getEmail());
 			myUser.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -145,6 +146,11 @@ public class AuthService {
 	public String createMailKey(Long userid) {
 		String randomString = createRandomString();
 		redisCacheStore.put(randomString,userid,90);
+		return randomString;
+	}
+	public String createMailkeyWithUserName(User user){
+		String randomString = createRandomString();
+		redisCacheStore.put(randomString,user,90);
 		return randomString;
 	}
 }
