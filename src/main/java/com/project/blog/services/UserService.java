@@ -92,7 +92,7 @@ public class UserService {
 				return pictureResponse;
 			} catch (IOException e) {
 				//pictureResponse.setError("Something Went Wrong");
-				//return pictureResponse;
+				return pictureResponse;
 			}
 		}
 	}
