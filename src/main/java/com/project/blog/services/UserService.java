@@ -91,9 +91,9 @@ public class UserService {
 				pictureResponse.setPicPath(saveTo.toString());
 				return pictureResponse;
 			} catch (IOException e) {
-				//pictureResponse.setError("Something Went Wrong");
-				return pictureResponse;
+				System.out.println("not an error");
 			}
+			return pictureResponse;
 		}
 	}
 	public FileSystemResource getFile(String location){
