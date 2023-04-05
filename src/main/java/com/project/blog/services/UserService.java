@@ -91,8 +91,8 @@ public class UserService {
 				pictureResponse.setPicPath(saveTo.toString());
 				return pictureResponse;
 			} catch (IOException e) {
-				pictureResponse.setError("Something Went Wrong");
-				return pictureResponse;
+				//pictureResponse.setError("Something Went Wrong");
+				//return pictureResponse;
 			}
 		}
 	}
