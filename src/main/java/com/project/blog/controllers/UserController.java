@@ -54,7 +54,7 @@ public class UserController {
 		//System.out.println(userpic.getContentType().toString().substring(userpic.getContentType().toString().lastIndexOf("/")+1));
 	}
 	@GetMapping(value ="/getphoto",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public FileSystemResource getFile(@RequestParam String location){
+	public String getFile(@RequestParam String location){
 		return userService.getFile(location);
 	}
 	@GetMapping("/checkpicture")

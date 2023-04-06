@@ -1,16 +1,23 @@
 package com.project.blog.services;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.project.blog.responses.PictureResponse;
 import com.project.blog.security.JwtTokenProvider;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -25,11 +32,14 @@ public class UserService {
 
 	private UserRepository userRepository;
 	private JwtTokenProvider jwtTokenProvider;
-	
+	private Cloudinary cloudinary;
+	@Value("${blog.app.userlogo}")
+	private String userlogo;
 	@Autowired
-	public UserService(UserRepository userRepository, JwtTokenProvider tokenProvider) {
+	public UserService(UserRepository userRepository, JwtTokenProvider tokenProvider,Cloudinary cloudinary) {
 		this.userRepository = userRepository;
 		this.jwtTokenProvider = tokenProvider;
+		this.cloudinary = cloudinary;
 	}
 	public List<User> getAllUsers(){
 		return userRepository.findAll();
@@ -61,11 +71,36 @@ public class UserService {
 		}
 	}
 	public PictureResponse saveUserPic(MultipartFile userpic, String Authorization){
-		String path = System.getProperty("user.dir") + "/";
+		//String path = System.getProperty("user.dir") + "/";
 		PictureResponse pictureResponse = new PictureResponse();
 		Optional<User> user = getUserFromAuth(Authorization);
-		String check = checkPicture(Authorization);
-		if(check.equals("error")) {
+		//String check = checkPicture(Authorization);
+
+		try {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			String extension = userpic.getContentType().toString().substring(userpic.getContentType().toString().lastIndexOf("/") + 1);
+			Thumbnails.of(userpic.getInputStream())
+					.size(300, 300) // Change the size to your desired dimensions
+					.outputFormat(extension)
+					.outputQuality(0.8) // Change the output quality (0.0 to 1.0)
+					.toOutputStream(outputStream);
+
+			ByteArrayInputStream compressedInputStream = new ByteArrayInputStream(outputStream.toByteArray());
+			Map<String, String> uploadResult = cloudinary.uploader().upload(compressedInputStream.readAllBytes(), ObjectUtils.asMap(
+					"folder", "user_pics/",
+					"public_id", user.get().getUsername(),
+					"overwrite", true
+			));
+			String uploadedImageUrl = uploadResult.get("url");
+			userRepository.updatePhoto(uploadedImageUrl, user.get().getId());
+			pictureResponse.setPicPath(uploadedImageUrl);
+			return pictureResponse;
+		}
+		catch(IOException e){
+			pictureResponse.setError("Something Went Wrong");
+			return pictureResponse;
+		}
+		/*if(check.equals("error")) {
 			String fileName = user.get().getUsername();
 			String extension = userpic.getContentType().toString().substring(userpic.getContentType().toString().lastIndexOf("/") + 1);
 			Path saveTo = Paths.get(path, fileName + "." + extension);
@@ -94,15 +129,20 @@ public class UserService {
 				System.out.println("not an error");
 			}
 			return pictureResponse;
-		}
+		}*/
 	}
-	public FileSystemResource getFile(String location){
-		try {
+	public String getFile(String location){
+		if(cloudinary.url().publicId(location).generate().equals("http://res.cloudinary.com/dbxchbci8/image/upload/")){
+			System.out.println(userlogo);
+			return userlogo;
+		}
+		return cloudinary.url().publicId(location).generate();
+		/*try {
 			return new FileSystemResource(Paths.get(location));
 		} catch (Exception e) {
 			// Handle access or file not found problems.
 			throw new RuntimeException();
-		}
+		}*/
 	}
 	public Optional<User> getUserFromAuth(String Authorization){
 		String bearer = extractJwtFromString(Authorization);
