@@ -1,6 +1,10 @@
 package com.project.blog.responses;
 
+import com.project.blog.DTOS.FollowedBlogs;
+import com.project.blog.entities.Blogs;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class AuthResponse {
@@ -10,4 +14,5 @@ public class AuthResponse {
 	String route;
 	String username;
 	String location;
+	List<FollowedBlogs> followedblogs;
 }

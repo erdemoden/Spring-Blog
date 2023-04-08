@@ -10,12 +10,16 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.project.blog.DTOS.FollowedBlogs;
+import com.project.blog.entities.Blogs;
 import com.project.blog.responses.PictureResponse;
 import com.project.blog.security.JwtTokenProvider;
 import net.coobird.thumbnailator.Thumbnails;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -27,19 +31,23 @@ import com.project.blog.repositories.UserRepository;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
+
 @Service
 public class UserService {
 
 	private UserRepository userRepository;
 	private JwtTokenProvider jwtTokenProvider;
 	private Cloudinary cloudinary;
+	private ModelMapper modelMapper;
 	@Value("${blog.app.userlogo}")
 	private String userlogo;
 	@Autowired
-	public UserService(UserRepository userRepository, JwtTokenProvider tokenProvider,Cloudinary cloudinary) {
+	public UserService(UserRepository userRepository, JwtTokenProvider tokenProvider,Cloudinary cloudinary,ModelMapper modelMapper) {
 		this.userRepository = userRepository;
 		this.jwtTokenProvider = tokenProvider;
 		this.cloudinary = cloudinary;
+		this.modelMapper = modelMapper;
 	}
 	public List<User> getAllUsers(){
 		return userRepository.findAll();
@@ -130,6 +138,12 @@ public class UserService {
 			}
 			return pictureResponse;
 		}*/
+	}
+	@Transactional
+	public List<FollowedBlogs> getFollowedBlogs(String Authorization){
+		Optional<User> user = getUserFromAuth(Authorization);
+		List<FollowedBlogs> followedBlogs = user.get().getFollowerBlogs().stream().map(followedblog->modelMapper.map(followedblog,FollowedBlogs.class)).collect(Collectors.toList());
+		return followedBlogs;
 	}
 	public String getFile(String location){
 		if(cloudinary.url().publicId(location).generate().equals("http://res.cloudinary.com/dbxchbci8/image/upload/")){

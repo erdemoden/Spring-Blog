@@ -8,6 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
+
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,6 +59,7 @@ public class RouteFilter implements Filter {
 			User user = userService.findById(id);
 			authResponse.setUsername(user.getUsername());
 			authResponse.setLocation(user.getUserphoto());
+			authResponse.setFollowedblogs(userService.getFollowedBlogs(((HttpServletRequest) request).getHeader("Authorization")));
 			mapper.writeValue(response.getOutputStream(), authResponse);
 		}
 		chain.doFilter(httpRequest, response);

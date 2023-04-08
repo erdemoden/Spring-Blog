@@ -2,6 +2,8 @@ package com.project.blog.controllers;
 
 import java.util.List;
 
+import com.project.blog.DTOS.FollowedBlogs;
+import com.project.blog.entities.Blogs;
 import com.project.blog.responses.PictureResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -67,5 +69,9 @@ public class UserController {
 		}
 		pictureResponse.setPicPath(check);
 		return pictureResponse;
+	}
+	@GetMapping("/getfollowedblog")
+	public List<FollowedBlogs>getFollowedBlogs(@RequestHeader String Authorization){
+		return userService.getFollowedBlogs(Authorization);
 	}
 }
