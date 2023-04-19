@@ -6,5 +6,5 @@ import lombok.Data;
 public class FollowedBlogs {
     long id;
     String title;
-
+    String subject;
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.project.blog.DTOS.FollowedBlogs;
 import com.project.blog.entities.Blogs;
+import com.project.blog.responses.OwnerFollower;
 import com.project.blog.responses.PictureResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -38,7 +39,10 @@ public class UserController {
 	public List<User>getAllUsers(){
 		return userService.getAllUsers();
 	}
-	
+	@GetMapping("isOwner")
+	public OwnerFollower isOwner(@RequestParam String username,@RequestParam String title){
+		return userService.isOwner(username,title);
+	}
 	@PostMapping("/save")
 	public void saveUser(@RequestBody User user) {
 		userService.checkMail(user.getEmail());

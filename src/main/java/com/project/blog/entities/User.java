@@ -30,7 +30,6 @@ public class User {
 	List<Posts> posts;
 
 	@OneToMany(mappedBy = "owner",cascade={CascadeType.ALL})
-	@JsonIgnore
 	List<Blogs> ownerBlogs;
 
 	@ManyToMany(mappedBy = "admins",fetch = FetchType.LAZY,cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})

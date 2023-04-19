@@ -16,6 +16,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.project.blog.DTOS.FollowedBlogs;
 import com.project.blog.entities.Blogs;
+import com.project.blog.responses.OwnerFollower;
 import com.project.blog.responses.PictureResponse;
 import com.project.blog.security.JwtTokenProvider;
 import net.coobird.thumbnailator.Thumbnails;
@@ -77,6 +78,22 @@ public class UserService {
 		catch(EmptyResultDataAccessException e) {
 			System.out.println("merhaba");
 		}
+	}
+	public OwnerFollower isOwner(String username,String title){
+		User user = findByUserName(username);
+		OwnerFollower ownerFollower = new OwnerFollower();
+		if(user!=null){
+			if(user.getOwnerBlogs().stream().filter(owner->owner.getTitle().equals(title)).findFirst().isPresent()){
+				ownerFollower.setOwner(true);
+			}
+			if(user.getFollowerBlogs().stream().filter(owner->owner.getTitle().equals(title)).findFirst().isPresent()){
+				ownerFollower.setFollower(true);
+			}
+			if(user.getAdminBlogs().stream().filter(owner->owner.getTitle().equals(title)).findFirst().isPresent()){
+				ownerFollower.setAdmin(true);
+			}
+		}
+		return ownerFollower;
 	}
 	public PictureResponse saveUserPic(MultipartFile userpic, String Authorization){
 		//String path = System.getProperty("user.dir") + "/";
@@ -164,6 +181,7 @@ public class UserService {
 		Optional<User> user = userRepository.findById(id);
 		return user;
 	}
+
 	public String checkPicture(String Authorization){
 		Optional<User> user = getUserFromAuth(Authorization);
 		if(user.get().getUserphoto()!=null){

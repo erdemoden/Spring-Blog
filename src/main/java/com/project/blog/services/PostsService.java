@@ -1,10 +1,13 @@
 package com.project.blog.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.project.blog.entities.Blogs;
 import com.project.blog.repositories.BlogsRepository;
 import com.project.blog.requests.BlogCreateRequest;
+import com.project.blog.responses.PostCreatedResponse;
+import com.project.blog.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +17,7 @@ import com.project.blog.entities.User;
 import com.project.blog.repositories.PostsRepository;
 import com.project.blog.repositories.UserRepository;
 import com.project.blog.requests.PostCreateRequest;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -22,30 +26,44 @@ public class PostsService {
 	private final PostsRepository postsRepository;
 	private final UserRepository userRepository;
 	private final BlogsRepository blogsRepository;
+	private  final JwtTokenProvider jwtTokenProvider;
 
 	public List<Posts> getAllPosts(){
 		
 		return postsRepository.findAll();
 	}
 	
-	public Posts createOnePost(PostCreateRequest postReq) {
-		
-		User user = userRepository.findById(postReq.getUserid()).orElse(null);
-		Blogs blogs = blogsRepository.findById(postReq.getBlogid()).orElse(null);
-		if(user == null) {
-			return null;
+	public PostCreatedResponse createOnePost(PostCreateRequest postReq, String Authorization) {
+		PostCreatedResponse postCreatedResponse = new PostCreatedResponse();
+		Optional<User> user = getUserFromAuth(Authorization);
+		Blogs blogs = blogsRepository.findByTitle(postReq.getBlogTitle());
+		if(user == null || blogs == null) {
+			postCreatedResponse.setError("There is No Such An User Or Blog");
+			return postCreatedResponse;
 		}
 		Posts post = new Posts();
 		post.setPost(postReq.getPost());
-		post.setTitle(postReq.getTitle());
-		post.setUser(user);
+		post.setUser(user.orElse(null));
 		post.setBlogs(blogs);
-		return postsRepository.save(post);
+		postCreatedResponse.setMessage("You Created Post Successfully");
+		return postCreatedResponse;
 	
 	}
-	
+	public Optional<User> getUserFromAuth(String Authorization){
+		String bearer = extractJwtFromString(Authorization);
+		long id = jwtTokenProvider.getUserIdFromJwt(bearer);
+		Optional<User> user = userRepository.findById(id);
+		return user;
+	}
 	public void deletePostById(Long id) {
 		postsRepository.deleteById(id);
+	}
+
+	private String extractJwtFromString(String bearer) {
+		if(StringUtils.hasText(bearer)&& bearer.startsWith("Bearer ")) {
+			return bearer.substring("Bearer".length()+1);
+		}
+		return null;
 	}
 	
 	
