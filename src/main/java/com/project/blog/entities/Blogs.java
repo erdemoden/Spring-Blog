@@ -16,7 +16,7 @@ public class Blogs {
     private long id;
     @Column(unique = true,name = "title")
     private String title;
-
+    @Column(name = "subject",length = 350)
     private String subject;
 
     @ManyToOne(cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
@@ -44,6 +44,7 @@ public class Blogs {
     @JsonIgnore
     private List<User> followers;
     @OneToMany(mappedBy = "blogs",cascade = {CascadeType.ALL})
+    @JsonIgnore
     private List<Posts> posts;
 
 }

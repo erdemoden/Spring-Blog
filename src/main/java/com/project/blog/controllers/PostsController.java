@@ -27,7 +27,10 @@ public class PostsController {
 	public PostCreatedResponse savePost(@RequestBody PostCreateRequest postReq, @RequestHeader String Authorization) {
 		return postsService.createOnePost(postReq,Authorization);
 	}
-	
+	@GetMapping("/postsOfUser")
+	public List<Posts> postsOfUsers(@RequestHeader String Authorization ){
+	return postsService.listPostsOfUser(Authorization);
+	}
 	@GetMapping
 	public List<Posts> getAllPosts(){
 		return postsService.getAllPosts();

@@ -1,5 +1,6 @@
 package com.project.blog.services;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,9 +46,14 @@ public class PostsService {
 		post.setPost(postReq.getPost());
 		post.setUser(user.orElse(null));
 		post.setBlogs(blogs);
-		postCreatedResponse.setMessage("You Created Post Successfully");
+		postsRepository.save(post);
+		postCreatedResponse.setMessage("You Can See Your Post On Your Profile Screen");
 		return postCreatedResponse;
-	
+	}
+	public List<Posts> listPostsOfUser(String Authorization){
+		Optional<User> user = getUserFromAuth(Authorization);
+		List<Posts> posts = postsRepository.postsFromUser(user.get().getUsername());
+		return posts;
 	}
 	public Optional<User> getUserFromAuth(String Authorization){
 		String bearer = extractJwtFromString(Authorization);

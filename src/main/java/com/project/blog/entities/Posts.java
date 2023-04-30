@@ -20,15 +20,12 @@ public class Posts {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	long id;
 
-	String title;
-
 	@Lob
-	@Column(columnDefinition = "text")
+	@Column(columnDefinition = "LONGTEXT")
 	String post;
 
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "userid")
-	@JsonIgnore
 	User user;
 
 	@OneToMany(mappedBy = "posts", cascade = {CascadeType.ALL})
@@ -36,7 +33,6 @@ public class Posts {
 
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "blogid")
-	@JsonIgnore
 	Blogs blogs;
 }
  
