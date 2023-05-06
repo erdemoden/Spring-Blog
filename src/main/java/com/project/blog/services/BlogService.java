@@ -5,6 +5,7 @@ import com.project.blog.entities.User;
 import com.project.blog.repositories.BlogsRepository;
 import com.project.blog.repositories.UserRepository;
 import com.project.blog.requests.BlogCreateRequest;
+import com.project.blog.responses.UserBlogLike;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,5 +38,17 @@ public class BlogService {
     public List<Blogs> findByUser(long userid){
         User user = userRepository.findById(userid).orElse(null);
         return user.getFollowerBlogs();
+    }
+    public List<UserBlogLike> findByUserAndBlogLike(String name){
+        List<UserBlogLike> userBlogLike = new LinkedList<>();
+        List <User> users = userRepository.findByUsernameLike(name);
+        List <Blogs> blogs = blogsRepository.findByTitleLike(name);
+        if(users.size()>0){
+            users.stream().forEach(user-> userBlogLike.add(new UserBlogLike(user.getUsername(),"user")));
+        }
+        if(blogs.size()>0){
+            blogs.stream().forEach(blog-> userBlogLike.add(new UserBlogLike(blog.getTitle()+"/B","blog")));
+        }
+        return userBlogLike;
     }
 }

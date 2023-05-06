@@ -2,6 +2,7 @@ package com.project.blog.controllers;
 
 import com.project.blog.entities.Blogs;
 import com.project.blog.requests.BlogCreateRequest;
+import com.project.blog.responses.UserBlogLike;
 import com.project.blog.services.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -26,5 +27,9 @@ public class BlogsController {
     @GetMapping("/getblogs")
     public List<Blogs> blogsWithUserId(@RequestParam long userid){
         return blogService.findByUser(userid);
+    }
+    @GetMapping("/userbloglike")
+    public List<UserBlogLike> findByUserAndBlogLike(@RequestParam String name){
+        return blogService.findByUserAndBlogLike(name);
     }
 }
