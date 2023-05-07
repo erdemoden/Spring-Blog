@@ -1,6 +1,7 @@
 package com.project.blog.controllers;
 
 import java.util.List;
+import java.util.Map;
 
 import com.project.blog.DTOS.FollowedBlogs;
 import com.project.blog.entities.Blogs;
@@ -62,6 +63,10 @@ public class UserController {
 	@GetMapping(value ="/getphoto",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public String getFile(@RequestParam String location){
 		return userService.getFile(location);
+	}
+	@GetMapping("/getusersphoto")
+	public PictureResponse getUsersPhoto(@RequestParam String username){
+		return userService.getUsersPhoto(username);
 	}
 	@GetMapping("/checkpicture")
 	public PictureResponse checkPicture(@RequestHeader String Authorization){

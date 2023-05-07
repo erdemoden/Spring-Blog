@@ -4,9 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -174,6 +176,29 @@ public class UserService {
 			// Handle access or file not found problems.
 			throw new RuntimeException();
 		}*/
+	}
+	public PictureResponse getUsersPhoto(String username){
+		PictureResponse pictureResponse = new PictureResponse();
+		if(findByUserName(username) == null){
+			pictureResponse.setError("There is no such an user");
+			return pictureResponse;
+		}
+		try {
+			Map result  = cloudinary.search().expression("filename:"+username).execute();
+			List<Map> resources = (List<Map>) result.get("resources");
+			if (resources.size() > 0) {
+				Map resource = resources.get(0);
+				String url = (String) resource.get("url");
+				pictureResponse.setPicPath(url);
+				return pictureResponse;
+			}
+			else{
+				pictureResponse.setPicPath(userlogo);
+				return pictureResponse;
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	public Optional<User> getUserFromAuth(String Authorization){
 		String bearer = extractJwtFromString(Authorization);
