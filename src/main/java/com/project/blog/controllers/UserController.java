@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.project.blog.DTOS.FollowedBlogs;
+import com.project.blog.DTOS.PostLikeId;
 import com.project.blog.entities.Blogs;
 import com.project.blog.responses.OwnerFollower;
 import com.project.blog.responses.PictureResponse;
@@ -82,5 +83,9 @@ public class UserController {
 	@GetMapping("/getfollowedblog")
 	public List<FollowedBlogs>getFollowedBlogs(@RequestHeader String Authorization){
 		return userService.getFollowedBlogs(Authorization);
+	}
+	@GetMapping("/getuserposts")
+	public List<PostLikeId> getUserPosts(@RequestHeader String Authorization){
+		return userService.getUserPosts(Authorization);
 	}
 }

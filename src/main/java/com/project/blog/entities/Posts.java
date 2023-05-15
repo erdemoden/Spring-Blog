@@ -26,13 +26,21 @@ public class Posts {
 
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "userid")
+	@JsonIgnore
 	User user;
 
 	@OneToMany(mappedBy = "posts", cascade = {CascadeType.ALL})
+	@JsonIgnore
 	List<Likes> likes;
 
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "blogid")
+	@JsonIgnore
 	Blogs blogs;
+
+	@OneToMany(mappedBy ="posts",cascade = {CascadeType.ALL})
+	@JsonIgnore
+	List<Comments> comments;
+
 }
  

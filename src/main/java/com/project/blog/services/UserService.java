@@ -8,16 +8,15 @@ import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.project.blog.DTOS.FollowedBlogs;
+import com.project.blog.DTOS.PostLikeId;
 import com.project.blog.entities.Blogs;
+import com.project.blog.entities.Posts;
 import com.project.blog.responses.OwnerFollower;
 import com.project.blog.responses.PictureResponse;
 import com.project.blog.security.JwtTokenProvider;
@@ -216,6 +215,8 @@ public class UserService {
 			return "error";
 		}
 	}
+
+	//TODO BURAYI BÜYÜK İHTİMAL SİLECEĞİM
 	public void checkMail(String mail) {
 		
 	}
@@ -226,5 +227,22 @@ public class UserService {
 		}
 		return null;
 	}
+	// TODO : userın postlarını getir
+	public List<PostLikeId> getUserPosts(String Authorization){
+		Optional<User> user = getUserFromAuth(Authorization);
+		List<Posts> posts = user.get().getPosts();
+		List<PostLikeId> postLikeIds = new ArrayList<>();
+		posts.stream().forEach(post->{
+			PostLikeId postLikeId = new PostLikeId();
+			postLikeId.setPost(post.getPost());
+			postLikeId.setUserPhoto(post.getUser().getUserphoto());
+			postLikeId.setId(post.getId());
+			postLikeId.setComments(post.getComments());
+			postLikeId.setLikes(post.getLikes().size());
+			postLikeIds.add(postLikeId);
+		});
+		return postLikeIds;
+	}
 
+	// TODO : Userın beğendiği postları getir
 }

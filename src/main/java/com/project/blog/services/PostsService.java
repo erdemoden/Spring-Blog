@@ -55,6 +55,11 @@ public class PostsService {
 		List<Posts> posts = postsRepository.postsFromUser(user.get().getUsername());
 		return posts;
 	}
+	public List<Posts> listPostsOfBlogs(long blogid){
+		Optional<Blogs> blogs = blogsRepository.findById(blogid);
+		List<Posts> posts = postsRepository.postsWithBlog(blogs.get().getTitle());
+		return posts;
+	}
 	public Optional<User> getUserFromAuth(String Authorization){
 		String bearer = extractJwtFromString(Authorization);
 		long id = jwtTokenProvider.getUserIdFromJwt(bearer);

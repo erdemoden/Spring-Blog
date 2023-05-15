@@ -27,18 +27,25 @@ public class LikesService {
 	}
 
 
-	public Likes cretaOneLike(LikeCreateRequest likeReq) {
+	public int cretaOneLike(LikeCreateRequest likeReq) {
 		User user = userRepository.findById(likeReq.getUserid()).orElse(null);
 		Posts post = postsRepository.findById(likeReq.getPostid()).orElse(null);
 		if(post == null || user == null) {
-			return null;
+			return 0;
 		}
 		Likes like = new Likes();
 		like.setPosts(post);
 		like.setUser(user);
-		return likesRepository.save(like);
+		likesRepository.save(like);
+		return getLikes(likeReq.getPostid());
 	}
-	
+	public int getLikes(long postId){
+		Posts post = postsRepository.findById(postId).orElse(null);
+		if(post == null) {
+			return 0;
+		}
+		return likesRepository.countLikesWithUSer(post);
+	}
 	public void deleteLikeById(Long id) {
 		likesRepository.deleteById(id);
 	}

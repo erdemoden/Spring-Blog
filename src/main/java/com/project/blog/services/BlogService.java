@@ -1,14 +1,17 @@
 package com.project.blog.services;
 
+import com.project.blog.DTOS.PostLikeId;
 import com.project.blog.entities.Blogs;
 import com.project.blog.entities.User;
 import com.project.blog.repositories.BlogsRepository;
 import com.project.blog.repositories.UserRepository;
 import com.project.blog.requests.BlogCreateRequest;
+import com.project.blog.responses.FindBlogsByTitle;
 import com.project.blog.responses.UserBlogLike;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -50,5 +53,25 @@ public class BlogService {
             blogs.stream().forEach(blog-> userBlogLike.add(new UserBlogLike(blog.getTitle()+"/B","blog")));
         }
         return userBlogLike;
+    }
+    public FindBlogsByTitle findByTitle(String title){
+        Blogs blogs = blogsRepository.findByTitle(title);
+        FindBlogsByTitle findBlogsByTitle = new FindBlogsByTitle();
+        findBlogsByTitle.setTitle(blogs.getTitle());
+        findBlogsByTitle.setSubject(blogs.getSubject());
+        findBlogsByTitle.setId(blogs.getId());
+        List<PostLikeId> postLikeIds= new ArrayList<>();
+        blogs.getPosts().stream().forEach(post->{
+            PostLikeId postLikeId = new PostLikeId();
+            postLikeId.setUserName(post.getUser().getUsername());
+            postLikeId.setUserPhoto(post.getUser().getUserphoto());
+            postLikeId.setPost(post.getPost());
+            postLikeId.setId(post.getId());
+            postLikeId.setLikes(post.getLikes().size());
+            postLikeId.setComments(post.getComments());
+            postLikeIds.add(postLikeId);
+        });
+        findBlogsByTitle.setPostLikeIdList(postLikeIds);
+        return findBlogsByTitle;
     }
 }

@@ -23,6 +23,10 @@ public class User {
 	String password;
 	String email;
 	String userphoto;
+
+	@OneToMany(mappedBy = "user",cascade = {CascadeType.ALL})
+	@JsonIgnore
+	List<Comments> comments;
 	@OneToMany(mappedBy="user",cascade = {CascadeType.REMOVE,CascadeType.ALL})
 	List<Likes> likes;
 	@OneToMany(mappedBy = "user",cascade = {CascadeType.ALL,CascadeType.REMOVE})

@@ -44,7 +44,6 @@ public class Blogs {
     @JsonIgnore
     private List<User> followers;
     @OneToMany(mappedBy = "blogs",cascade = {CascadeType.ALL})
-    @JsonIgnore
     private List<Posts> posts;
 
 }

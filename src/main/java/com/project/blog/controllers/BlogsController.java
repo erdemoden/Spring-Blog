@@ -2,6 +2,7 @@ package com.project.blog.controllers;
 
 import com.project.blog.entities.Blogs;
 import com.project.blog.requests.BlogCreateRequest;
+import com.project.blog.responses.FindBlogsByTitle;
 import com.project.blog.responses.UserBlogLike;
 import com.project.blog.services.BlogService;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +32,9 @@ public class BlogsController {
     @GetMapping("/userbloglike")
     public List<UserBlogLike> findByUserAndBlogLike(@RequestParam String name){
         return blogService.findByUserAndBlogLike(name);
+    }
+    @GetMapping("/findbytitle")
+    public FindBlogsByTitle findByTitle(@RequestParam String title){
+        return blogService.findByTitle(title);
     }
 }

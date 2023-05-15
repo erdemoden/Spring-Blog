@@ -10,6 +10,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,9 +21,10 @@ import com.project.blog.services.UserService;
 
 
 public class RouteFilter implements Filter {
-	
-	
 
+
+	@Value("${blog.app.userlogo}")
+	private String userlogo;
 	public JwtTokenProvider jwtTokenProvider;
 	
 
@@ -58,7 +60,12 @@ public class RouteFilter implements Filter {
 			long id = jwtTokenProvider.getUserIdFromJwt(jwt);
 			User user = userService.findById(id);
 			authResponse.setUsername(user.getUsername());
-			authResponse.setLocation(user.getUserphoto());
+			if(user.getUserphoto()!=null) {
+				authResponse.setLocation(user.getUserphoto());
+			}
+			else{
+				authResponse.setLocation(userlogo);
+			}
 			authResponse.setFollowedblogs(userService.getFollowedBlogs(((HttpServletRequest) request).getHeader("Authorization")));
 			mapper.writeValue(response.getOutputStream(), authResponse);
 		}

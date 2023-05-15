@@ -1,12 +1,7 @@
 package com.project.blog.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.project.blog.entities.Likes;
 import com.project.blog.entities.Posts;
@@ -27,10 +22,15 @@ public class LikeController {
 	
 	
 	@PostMapping
-	public Likes saveLike(@RequestBody LikeCreateRequest likeReq) {
+	public int saveLike(@RequestBody LikeCreateRequest likeReq) {
 		
 		return likesService.cretaOneLike(likeReq);
 		
+	}
+
+	@GetMapping("/getlikes")
+	public int getLikes(@RequestParam long postid){
+		return likesService.getLikes(postid);
 	}
 	@GetMapping("/delete/{id}")
 	public void deleteLike(@PathVariable Long id) {
