@@ -21,20 +21,22 @@ public class LikeController {
 	}
 	
 	
-	@PostMapping
-	public int saveLike(@RequestBody LikeCreateRequest likeReq) {
-		
-		return likesService.cretaOneLike(likeReq);
-		
+	@PostMapping("/create")
+	public int saveLike(@RequestBody LikeCreateRequest likeReq,@RequestHeader String Authorization) {
+		return likesService.cretaOneLike(likeReq,Authorization);
 	}
 
 	@GetMapping("/getlikes")
 	public int getLikes(@RequestParam long postid){
 		return likesService.getLikes(postid);
 	}
-	@GetMapping("/delete/{id}")
-	public void deleteLike(@PathVariable Long id) {
-		likesService.deleteLikeById(id);
+	@GetMapping("/delete/{postId}")
+	public void deleteLike(@PathVariable("postId") Long postId,@RequestHeader String Authorization) {
+		likesService.deleteLikeById(postId,Authorization);
+	}
+	@GetMapping("/isuserliked")
+	public boolean isUserLiked(@RequestParam long postId,@RequestHeader String Authorization){
+		return likesService.isLikedByUser(postId,Authorization);
 	}
 	
 	
