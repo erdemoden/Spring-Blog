@@ -17,4 +17,5 @@ public interface PostsRepository extends JpaRepository<Posts, Long> {
 
     @Query(value = "select * from posts  where posts.blogs = :blog",nativeQuery = true)
     List<Posts> postsWithBlog(@Param("blog") String blog);
+
 } 

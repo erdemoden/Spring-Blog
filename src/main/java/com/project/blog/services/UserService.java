@@ -16,6 +16,7 @@ import com.cloudinary.utils.ObjectUtils;
 import com.project.blog.DTOS.FollowedBlogs;
 import com.project.blog.DTOS.PostLikeId;
 import com.project.blog.entities.Blogs;
+import com.project.blog.entities.Likes;
 import com.project.blog.entities.Posts;
 import com.project.blog.responses.OwnerFollower;
 import com.project.blog.responses.PictureResponse;
@@ -235,6 +236,7 @@ public class UserService {
 		posts.stream().forEach(post->{
 			PostLikeId postLikeId = new PostLikeId();
 			postLikeId.setPost(post.getPost());
+			postLikeId.setUserName(user.get().getUsername());
 			postLikeId.setUserPhoto(post.getUser().getUserphoto());
 			postLikeId.setId(post.getId());
 			postLikeId.setComments(post.getComments());
@@ -243,6 +245,22 @@ public class UserService {
 		});
 		return postLikeIds;
 	}
-
 	// TODO : Userın beğendiği postları getir
+	public List<PostLikeId> getLikedPosts(String Authorization){
+		Optional<User> user = getUserFromAuth(Authorization);
+		List<Likes> likes = user.get().getLikes();
+		List <Posts> posts = likes.stream().map(like->like.getPosts()).collect(Collectors.toList());
+		List<PostLikeId> postLikeIds = new ArrayList<>();
+		posts.stream().forEach(post->{
+			PostLikeId postLikeId = new PostLikeId();
+			postLikeId.setPost(post.getPost());
+			postLikeId.setUserName(user.get().getUsername());
+			postLikeId.setUserPhoto(post.getUser().getUserphoto());
+			postLikeId.setId(post.getId());
+			postLikeId.setComments(post.getComments());
+			postLikeId.setLikes(post.getLikes().size());
+			postLikeIds.add(postLikeId);
+		});
+		return postLikeIds;
+	}
 }

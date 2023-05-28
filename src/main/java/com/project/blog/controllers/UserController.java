@@ -88,4 +88,8 @@ public class UserController {
 	public List<PostLikeId> getUserPosts(@RequestHeader String Authorization){
 		return userService.getUserPosts(Authorization);
 	}
+	@GetMapping("/getlikedposts")
+	public List<PostLikeId> getLikedPosts(@RequestHeader String Authorization){
+		return userService.getLikedPosts(Authorization);
+	}
 }

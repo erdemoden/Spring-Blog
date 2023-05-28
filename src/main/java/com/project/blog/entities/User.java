@@ -17,10 +17,13 @@ public class User {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@JsonIgnore
 	 Long id;
 	
 	String username;
+	@JsonIgnore
 	String password;
+	@JsonIgnore
 	String email;
 	String userphoto;
 
@@ -28,19 +31,22 @@ public class User {
 	@JsonIgnore
 	List<Comments> comments;
 	@OneToMany(mappedBy="user",cascade = {CascadeType.REMOVE,CascadeType.ALL})
+	@JsonIgnore
 	List<Likes> likes;
 	@OneToMany(mappedBy = "user",cascade = {CascadeType.ALL,CascadeType.REMOVE})
 	@JsonIgnore
 	List<Posts> posts;
 
 	@OneToMany(mappedBy = "owner",cascade={CascadeType.ALL})
+	@JsonIgnore
 	List<Blogs> ownerBlogs;
 
 	@ManyToMany(mappedBy = "admins",fetch = FetchType.LAZY,cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+	@JsonIgnore
 	List<Blogs> adminBlogs;
 
 	@ManyToMany(mappedBy = "followers",fetch = FetchType.LAZY,cascade= {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
-
+	@JsonIgnore
 	List<Blogs> followerBlogs;
 }
  

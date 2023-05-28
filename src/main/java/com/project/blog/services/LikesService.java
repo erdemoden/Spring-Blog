@@ -54,6 +54,7 @@ public class LikesService {
 		User user = userService.getUserFromAuth(authorization).orElse(null);
 		Posts posts = postsRepository.findById(postId).orElse(null);
 		Likes likes = likesRepository.getLikeByUserAndPost(posts,user);
+		likesRepository.delete(likes);
 	}
 	
 }

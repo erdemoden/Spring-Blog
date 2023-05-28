@@ -15,7 +15,7 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     @Query(value = "SELECT COUNT(postid) FROM likes where postid =:posts",nativeQuery = true)
     int countLikesWithPosts(@Param("posts") Posts posts);
 
-    @Query(value = "Select * from likes where postid=:posts and userid:user",nativeQuery = true)
+    @Query(value = "Select * from likes where postid=:posts and userid=:user",nativeQuery = true)
     Likes getLikeByUserAndPost(@Param("posts") Posts posts, @Param("user") User user);
 
     @Query(value = "select case when exists(select * from likes where userid=:user and postid=:posts) then true else false end ",nativeQuery = true)
