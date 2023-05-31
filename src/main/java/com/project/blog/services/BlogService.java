@@ -6,6 +6,7 @@ import com.project.blog.entities.User;
 import com.project.blog.repositories.BlogsRepository;
 import com.project.blog.repositories.UserRepository;
 import com.project.blog.requests.BlogCreateRequest;
+import com.project.blog.responses.ErrorSuccessResponse;
 import com.project.blog.responses.FindBlogsByTitle;
 import com.project.blog.responses.UserBlogLike;
 import lombok.RequiredArgsConstructor;
@@ -73,5 +74,18 @@ public class BlogService {
         });
         findBlogsByTitle.setPostLikeIdList(postLikeIds);
         return findBlogsByTitle;
+    }
+    public ErrorSuccessResponse createAdmin(long blogId,String Authorization){
+        ErrorSuccessResponse errorSuccessResponse = new ErrorSuccessResponse();
+        User user  = userService.getUserFromAuth(Authorization).orElse(null);
+        if(user==null){
+            errorSuccessResponse.setError("We Could Not Find The User!");
+            return errorSuccessResponse;
+        }
+        Blogs blogs = blogsRepository.getById(blogId);
+        List<Blogs> blogsList = user.getAdminBlogs();
+        blogsList.add(blogs);
+        user.setAdminBlogs(blogsList);
+        return null;
     }
 }

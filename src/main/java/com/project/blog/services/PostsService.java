@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.project.blog.entities.Blogs;
 import com.project.blog.repositories.BlogsRepository;
 import com.project.blog.requests.BlogCreateRequest;
+import com.project.blog.responses.ErrorSuccessResponse;
 import com.project.blog.responses.PostCreatedResponse;
 import com.project.blog.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -66,8 +67,15 @@ public class PostsService {
 		Optional<User> user = userRepository.findById(id);
 		return user;
 	}
-	public void deletePostById(Long id) {
+	public ErrorSuccessResponse deletePostById(Long id) {
+		ErrorSuccessResponse errorSuccessResponse = new ErrorSuccessResponse();
+		if(!postsRepository.findById(id).isPresent()){
+			errorSuccessResponse.setError("We Could Not Find The Post");
+			return errorSuccessResponse;
+		}
 		postsRepository.deleteById(id);
+		errorSuccessResponse.setSuccess("You Deleted The Post Successfully");
+		return errorSuccessResponse;
 	}
 
 	private String extractJwtFromString(String bearer) {

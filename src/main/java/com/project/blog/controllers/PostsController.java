@@ -2,6 +2,7 @@ package com.project.blog.controllers;
 
 import java.util.List;
 
+import com.project.blog.responses.ErrorSuccessResponse;
 import com.project.blog.responses.PostCreatedResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,7 @@ public class PostsController {
 	}
 	
 	@GetMapping("/delete/{id}")
-	public void deletepost(@PathVariable Long id) {
-		postsService.deletePostById(id);
+	public ErrorSuccessResponse deletepost(@PathVariable Long id) {
+		return postsService.deletePostById(id);
 	}
 }
