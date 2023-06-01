@@ -83,9 +83,58 @@ public class BlogService {
             return errorSuccessResponse;
         }
         Blogs blogs = blogsRepository.getById(blogId);
-        List<Blogs> blogsList = user.getAdminBlogs();
-        blogsList.add(blogs);
-        user.setAdminBlogs(blogsList);
-        return null;
+        blogs.getAdmins().add(user);
+        blogsRepository.save(blogs);
+        errorSuccessResponse.setSuccess("User Became Admin");
+        return errorSuccessResponse;
+    }
+    public ErrorSuccessResponse deleteAdmin(long blogId,String Authorization){
+        ErrorSuccessResponse errorSuccessResponse = new ErrorSuccessResponse();
+        User user = userService.getUserFromAuth(Authorization).orElse(null);
+        if(user==null){
+            errorSuccessResponse.setError("We Could Not Find The USer!");
+            return errorSuccessResponse;
+        }
+        Blogs blogs = blogsRepository.getById(blogId);
+        blogs.getAdmins().remove(user);
+        blogsRepository.save(blogs);
+        errorSuccessResponse.setSuccess("Deleted Admin Role");
+        return errorSuccessResponse;
+    }
+    public ErrorSuccessResponse followblog(long blogId,String Authorization){
+        ErrorSuccessResponse errorSuccessResponse  = new ErrorSuccessResponse();
+        User user = userService.getUserFromAuth(Authorization).orElse(null);
+        if(user==null){
+            errorSuccessResponse.setError("We Could Not Find The USer!");
+            return errorSuccessResponse;
+        }
+        Blogs blogs = blogsRepository.getById(blogId);
+        user.getFollowerBlogs().add(blogs);
+        blogs.getFollowers().add(user);
+        //userService.save(user);
+        blogsRepository.save(blogs);
+        errorSuccessResponse.setSuccess("You Are Now Following : "+blogs.getTitle());
+        return errorSuccessResponse;
+    }
+    public ErrorSuccessResponse unfollowblog(long blogId,String Authorization){
+        ErrorSuccessResponse errorSuccessResponse  = new ErrorSuccessResponse();
+        User user = userService.getUserFromAuth(Authorization).orElse(null);
+        if(user==null){
+            errorSuccessResponse.setError("We Could Not Find The USer!");
+            return errorSuccessResponse;
+        }
+        Blogs blogs = blogsRepository.getById(blogId);
+       // user.getFollowerBlogs().remove(blogs);
+        if(user.getFollowerBlogs().size()>0) {
+            System.out.println(user.getFollowerBlogs().get(0).getTitle());
+        }
+        blogs.getFollowers().remove(user);
+        blogsRepository.save(blogs);
+        if(user.getFollowerBlogs().size()>0) {
+            System.out.println(user.getFollowerBlogs().get(0).getTitle());
+        }
+        //userService.save(user);
+        errorSuccessResponse.setSuccess("You Unfollowed the Blog : "+blogs.getTitle());
+        return errorSuccessResponse;
     }
 }

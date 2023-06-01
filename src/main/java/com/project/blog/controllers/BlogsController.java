@@ -2,6 +2,7 @@ package com.project.blog.controllers;
 
 import com.project.blog.entities.Blogs;
 import com.project.blog.requests.BlogCreateRequest;
+import com.project.blog.responses.ErrorSuccessResponse;
 import com.project.blog.responses.FindBlogsByTitle;
 import com.project.blog.responses.UserBlogLike;
 import com.project.blog.services.BlogService;
@@ -36,5 +37,21 @@ public class BlogsController {
     @GetMapping("/findbytitle")
     public FindBlogsByTitle findByTitle(@RequestParam String title){
         return blogService.findByTitle(title);
+    }
+    @GetMapping("/createadmin")
+    public ErrorSuccessResponse createAdmin(@RequestParam long blogid,@RequestHeader String Authorization){
+        return blogService.createAdmin(blogid,Authorization);
+    }
+    @GetMapping("/removeadmin")
+    public ErrorSuccessResponse removeAdmin(@RequestParam long blogid,@RequestHeader String Authorization){
+       return blogService.deleteAdmin(blogid,Authorization);
+    }
+    @GetMapping("/followblog")
+    public ErrorSuccessResponse followBlog(@RequestParam long blogid,@RequestHeader String Authorization){
+        return blogService.followblog(blogid,Authorization);
+    }
+    @GetMapping("/unfollowblog")
+    public ErrorSuccessResponse unFollowBlog(@RequestParam long blogid,@RequestHeader String Authorization){
+        return blogService.unfollowblog(blogid,Authorization);
     }
 }

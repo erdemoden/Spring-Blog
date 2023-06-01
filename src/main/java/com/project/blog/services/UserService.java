@@ -254,7 +254,7 @@ public class UserService {
 		posts.stream().forEach(post->{
 			PostLikeId postLikeId = new PostLikeId();
 			postLikeId.setPost(post.getPost());
-			postLikeId.setUserName(user.get().getUsername());
+			postLikeId.setUserName(post.getUser().getUsername());
 			postLikeId.setUserPhoto(post.getUser().getUserphoto());
 			postLikeId.setId(post.getId());
 			postLikeId.setComments(post.getComments());
