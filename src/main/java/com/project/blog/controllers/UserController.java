@@ -92,4 +92,8 @@ public class UserController {
 	public List<PostLikeId> getLikedPosts(@RequestHeader String Authorization){
 		return userService.getLikedPosts(Authorization);
 	}
+	@GetMapping("/checkadminandowner")
+	public OwnerFollower checkAdminAndOwner(@RequestHeader String Authorization,@RequestParam String adminname){
+		return userService.checkAdminAndOwner(adminname,Authorization);
+	}
 }

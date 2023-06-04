@@ -1,5 +1,6 @@
 package com.project.blog.services;
 
+import com.project.blog.DTOS.FollowedBlogs;
 import com.project.blog.DTOS.PostLikeId;
 import com.project.blog.entities.Blogs;
 import com.project.blog.entities.User;
@@ -10,12 +11,14 @@ import com.project.blog.responses.ErrorSuccessResponse;
 import com.project.blog.responses.FindBlogsByTitle;
 import com.project.blog.responses.UserBlogLike;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -23,6 +26,7 @@ public class BlogService {
     private final BlogsRepository blogsRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final ModelMapper modelMapper;
     public Blogs saveBlog(BlogCreateRequest blogCreateRequest,String authorization){
         Optional<User> user = userService.getUserFromAuth(authorization);
         List<User> followers = new LinkedList<>();
@@ -75,28 +79,33 @@ public class BlogService {
         findBlogsByTitle.setPostLikeIdList(postLikeIds);
         return findBlogsByTitle;
     }
-    public ErrorSuccessResponse createAdmin(long blogId,String Authorization){
+    public ErrorSuccessResponse createAdmin(long blogId,String Authorization,String adminName){
         ErrorSuccessResponse errorSuccessResponse = new ErrorSuccessResponse();
-        User user  = userService.getUserFromAuth(Authorization).orElse(null);
-        if(user==null){
-            errorSuccessResponse.setError("We Could Not Find The User!");
+        User admin = userService.findByUserName(adminName);
+        User owner = userService.getUserFromAuth(Authorization).orElse(null);
+        Blogs blogs = blogsRepository.getById(blogId);
+        if(admin==null||blogs == null||owner==null||(!owner.getClass().equals(admin.getClass()) && owner.getOwnerBlogs().stream().filter(ownerblog->ownerblog.getId()==blogId).collect(Collectors.toList()).size()<=0)){
+            errorSuccessResponse.setError("Something Went Wrong Refresh The Page");
             return errorSuccessResponse;
         }
-        Blogs blogs = blogsRepository.getById(blogId);
-        blogs.getAdmins().add(user);
+
+        blogs.getAdmins().add(admin);
         blogsRepository.save(blogs);
         errorSuccessResponse.setSuccess("User Became Admin");
         return errorSuccessResponse;
     }
-    public ErrorSuccessResponse deleteAdmin(long blogId,String Authorization){
+    public ErrorSuccessResponse deleteAdmin(long blogId,String Authorization,String adminName){
         ErrorSuccessResponse errorSuccessResponse = new ErrorSuccessResponse();
-        User user = userService.getUserFromAuth(Authorization).orElse(null);
-        if(user==null){
-            errorSuccessResponse.setError("We Could Not Find The USer!");
+        User admin = userService.findByUserName(adminName);
+        User owner = userService.getUserFromAuth(Authorization).orElse(null);
+        Blogs blogs = blogsRepository.getById(blogId);
+        System.out.println(blogId);
+        if(admin==null||blogs == null||owner == null||(!owner.getClass().equals(admin.getClass()) && owner.getOwnerBlogs().stream().filter(ownerblog->ownerblog.getId()==blogId).collect(Collectors.toList()).size()<=0)){
+            errorSuccessResponse.setError("Something Went Wrong Refresh The Page");
             return errorSuccessResponse;
         }
-        Blogs blogs = blogsRepository.getById(blogId);
-        blogs.getAdmins().remove(user);
+
+        blogs.getAdmins().remove(admin);
         blogsRepository.save(blogs);
         errorSuccessResponse.setSuccess("Deleted Admin Role");
         return errorSuccessResponse;
@@ -113,7 +122,9 @@ public class BlogService {
         blogs.getFollowers().add(user);
         //userService.save(user);
         blogsRepository.save(blogs);
+        FollowedBlogs followedBlogs = modelMapper.map(blogs, FollowedBlogs.class);
         errorSuccessResponse.setSuccess("You Are Now Following : "+blogs.getTitle());
+        errorSuccessResponse.setObject(followedBlogs);
         return errorSuccessResponse;
     }
     public ErrorSuccessResponse unfollowblog(long blogId,String Authorization){

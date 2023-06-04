@@ -161,7 +161,8 @@ public class UserService {
 	@Transactional
 	public List<FollowedBlogs> getFollowedBlogs(String Authorization){
 		Optional<User> user = getUserFromAuth(Authorization);
-		List<FollowedBlogs> followedBlogs = user.get().getFollowerBlogs().stream().map(followedblog->modelMapper.map(followedblog,FollowedBlogs.class)).collect(Collectors.toList());
+		List<FollowedBlogs> followedBlogs = new LinkedList<>(user.get().getFollowerBlogs().stream().map(followedblog->modelMapper.map(followedblog,FollowedBlogs.class)).collect(Collectors.toList()));
+		followedBlogs.addAll(user.get().getAdminBlogs().stream().map(adminblog->modelMapper.map(adminblog,FollowedBlogs.class)).collect(Collectors.toList()));
 		return followedBlogs;
 	}
 	public String getFile(String location){
@@ -263,4 +264,23 @@ public class UserService {
 		});
 		return postLikeIds;
 	}
+	public OwnerFollower checkAdminAndOwner(String adminName,String Authorization){
+		OwnerFollower ownerFollower = new OwnerFollower();
+		User owner = getUserFromAuth(Authorization).orElse(null);
+		User admin = userRepository.findByUsername(adminName);
+		if(owner==null||admin==null){
+			ownerFollower.setError("Something Went Wrong Please Refresh The Page");
+			return ownerFollower;
+		}
+		if(owner.getOwnerBlogs().size()>0){
+			ownerFollower.setOwner(true);
+			ownerFollower.setOwnerBlogs(owner.getOwnerBlogs().stream().map(ownerblog->modelMapper.map(ownerblog,FollowedBlogs.class)).collect(Collectors.toList()));
+		}
+		if(admin.getAdminBlogs().size()>0){
+			ownerFollower.setAdmin(true);
+			ownerFollower.setAdminBlogs(admin.getAdminBlogs().stream().map(adminblog->modelMapper.map(adminblog,FollowedBlogs.class)).collect(Collectors.toList()));
+		}
+		return ownerFollower;
+	}
+
 }

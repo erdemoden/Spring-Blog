@@ -7,6 +7,7 @@ import com.project.blog.responses.FindBlogsByTitle;
 import com.project.blog.responses.UserBlogLike;
 import com.project.blog.services.BlogService;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,12 +40,12 @@ public class BlogsController {
         return blogService.findByTitle(title);
     }
     @GetMapping("/createadmin")
-    public ErrorSuccessResponse createAdmin(@RequestParam long blogid,@RequestHeader String Authorization){
-        return blogService.createAdmin(blogid,Authorization);
+    public ErrorSuccessResponse createAdmin(@RequestParam long blogid,@RequestHeader String Authorization,@RequestParam String adminname){
+        return blogService.createAdmin(blogid,Authorization,adminname);
     }
     @GetMapping("/removeadmin")
-    public ErrorSuccessResponse removeAdmin(@RequestParam long blogid,@RequestHeader String Authorization){
-       return blogService.deleteAdmin(blogid,Authorization);
+    public ErrorSuccessResponse removeAdmin(@RequestParam long blogid,@RequestHeader String Authorization,@RequestParam String adminname){
+       return blogService.deleteAdmin(blogid,Authorization,adminname);
     }
     @GetMapping("/followblog")
     public ErrorSuccessResponse followBlog(@RequestParam long blogid,@RequestHeader String Authorization){
