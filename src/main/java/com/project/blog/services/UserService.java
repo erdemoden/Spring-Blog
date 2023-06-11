@@ -8,6 +8,8 @@ import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -281,6 +283,55 @@ public class UserService {
 			ownerFollower.setAdminBlogs(admin.getAdminBlogs().stream().map(adminblog->modelMapper.map(adminblog,FollowedBlogs.class)).collect(Collectors.toList()));
 		}
 		return ownerFollower;
+	}
+
+	public void thirtyMinuteBlock(String Authorization){
+		User user = getUserFromAuth(Authorization).orElse(null);
+		if(user!=null) {
+			user.setBlocked(LocalDateTime.now());
+			userRepository.save(user);
+		}
+	}
+
+	public void deleteTimeBlock(String Authorization){
+		User user = getUserFromAuth(Authorization).orElse(null);
+		if(user!=null) {
+			user.setBlocked(null);
+			userRepository.save(user);
+		}
+	}
+
+	public boolean isUserBlockExist(String Authorization){
+		User user = getUserFromAuth(Authorization).orElse(null);
+		if(user!=null && user.getBlocked()!=null){
+			return true;
+		}
+		return false;
+	}
+	public boolean checkUserBlock(User user){
+		LocalDateTime now = LocalDateTime.now();
+		if(user == null || user.getBlocked()==null){
+			return false;
+		}
+		Duration duration = Duration.between(user.getBlocked(),now);
+		if(duration.toHours()<24 && duration.toMinutes()>=1){
+			System.out.println(duration.toHours());
+			System.out.println(duration.toMinutes());
+			return true;
+		}
+		System.out.println(duration.toHours());
+		System.out.println(duration.toMinutes());
+		return false;
+	}
+	public void ifBlockExpiredUpdate(User user){
+		if(user.getBlocked()!=null){
+			Duration duration = Duration.between(user.getBlocked(),LocalDateTime.now());
+			if(duration.toHours()>=24){
+				//System.out.println(duration.toHours());
+				user.setBlocked(LocalDateTime.now());
+				userRepository.save(user);
+			}
+		}
 	}
 
 }

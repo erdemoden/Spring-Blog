@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
 	private UserService userService;
- 
+
 	@Autowired
 	public UserController(UserService userService) {
 		this.userService = userService;
@@ -96,4 +96,20 @@ public class UserController {
 	public OwnerFollower checkAdminAndOwner(@RequestHeader String Authorization,@RequestParam String adminname){
 		return userService.checkAdminAndOwner(adminname,Authorization);
 	}
+	@GetMapping("/blockuser")
+	public void thirtyMinuteBlock(@RequestHeader String Authorization){
+		userService.thirtyMinuteBlock(Authorization);
+	}
+	@GetMapping("/deleteblock")
+	public void deleteTimeBlock(@RequestHeader String Authorization){
+		userService.deleteTimeBlock(Authorization);
+	}
+	@GetMapping("/isuserblockexist")
+	public boolean isUserBlockExist(@RequestHeader String Authorization){
+		return userService.isUserBlockExist(Authorization);
+	}
+	/*@GetMapping("/checkuserblock")
+	public boolean checkUserBlock(@RequestHeader String Authorization){
+		return userService.checkUserBlock(Authorization);
+	}*/
 }

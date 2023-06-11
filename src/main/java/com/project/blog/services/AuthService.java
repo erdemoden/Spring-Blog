@@ -66,19 +66,40 @@ public class AuthService {
 		User user;
 		AuthResponse response = new AuthResponse();
 		try {
-			Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(auth.getMailOrEmail(),auth.getPassword()));
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-			String jwtToken = jwtTokenProvider.generateJwtToken(authentication);
-			response.setCreated(true);
-			response.setAccessToken("Bearer "+jwtToken);
 			if(userService.findByEmail(auth.getMailOrEmail())!=null) {
 				user = userService.findByEmail(auth.getMailOrEmail());
+				if(userService.checkUserBlock(user)){
+					response.setCreated(false);
+					response.setAccessToken("");
+					response.setBlocked(true);
+					response.setError("You Are Blocked Until Tommorow");
+					return response;
+				}
+				Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(auth.getMailOrEmail(),auth.getPassword()));
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+				String jwtToken = jwtTokenProvider.generateJwtToken(authentication);
+				response.setCreated(true);
+				response.setAccessToken("Bearer "+jwtToken);
+				userService.ifBlockExpiredUpdate(user);
 				String key = createMailKey(user.getId());
 				emailService.sendEmail(user.getEmail(),"Vertification Code","Your Vertification Code : "+key);
 				//createMailKey(user);
 			}
 			else {
 				user = userService.findByUserName(auth.getMailOrEmail());
+				if(userService.checkUserBlock(user)){
+					response.setCreated(false);
+					response.setAccessToken("");
+					response.setBlocked(true);
+					response.setError("You Are Blocked Until Tommorow");
+					return response;
+				}
+				Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(auth.getMailOrEmail(),auth.getPassword()));
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+				String jwtToken = jwtTokenProvider.generateJwtToken(authentication);
+				response.setCreated(true);
+				response.setAccessToken("Bearer "+jwtToken);
+				userService.ifBlockExpiredUpdate(user);
 				String key = createMailKey(user.getId());
 				emailService.sendEmail(user.getEmail(),"Vertification Code","Your Vertification Code : "+key);
 			}
@@ -86,6 +107,7 @@ public class AuthService {
 		}
 		catch(Exception e) {
 			response.setCreated(false);
+			response.setBlocked(false);
 			response.setError("Your Name Or Password Is Wrong Please Check Them");
 			return response;
 		}

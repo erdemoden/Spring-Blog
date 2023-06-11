@@ -39,9 +39,21 @@ public class BlogService {
         blogsRepository.save(blogs);
         return blogs;
     }
-    public  void deleteBlog(long blogid){
+    public  ErrorSuccessResponse deleteBlog(long blogid,String Authorization){
+        ErrorSuccessResponse errorSuccessResponse = new ErrorSuccessResponse();
+        User user = userService.getUserFromAuth(Authorization).orElse(null);
         Blogs blogs = blogsRepository.findById(blogid).orElse(null);
-        blogsRepository.delete(blogs);
+        if(blogs!=null && user!=null && user.getOwnerBlogs().stream().filter(blog->blog.getId()==blogs.getId()).collect(Collectors.toList()).size()>0){
+            errorSuccessResponse.setSuccess("Blog Deleted Successfully");
+            user.getOwnerBlogs().removeIf(blog -> blog.getId() == blogs.getId());
+            userService.save(user);
+            blogsRepository.delete(blogs);
+            return errorSuccessResponse;
+        }
+        else{
+            errorSuccessResponse.setError("Something Went Wrong Please Try Again");
+            return errorSuccessResponse;
+        }
     }
     public List<Blogs> findByUser(long userid){
         User user = userRepository.findById(userid).orElse(null);
@@ -89,6 +101,7 @@ public class BlogService {
             return errorSuccessResponse;
         }
 
+        blogs.setFollowers(blogs.getFollowers().stream().filter(follow->follow.getUsername()!=admin.getUsername()).collect(Collectors.toList()));
         blogs.getAdmins().add(admin);
         blogsRepository.save(blogs);
         errorSuccessResponse.setSuccess("User Became Admin");

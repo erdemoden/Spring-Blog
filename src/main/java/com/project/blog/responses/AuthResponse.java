@@ -15,4 +15,5 @@ public class AuthResponse {
 	String username;
 	String location;
 	List<FollowedBlogs> followedblogs;
+	boolean isBlocked;
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.project.blog.entities.User;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -26,6 +27,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Query("UPDATE User u SET u.userphoto = :userpic where u.id = :id ")
 	void updatePhoto(@Param("userpic") String userpic,@Param("id") long id);
 
-
+	@Query(value = "Select * from user e where TIMESTAMPDIFF(MINUTE, e.blocked, :compare) >= 1",nativeQuery = true)
+	List<User> findBlockedUsers(@Param("compare")LocalDateTime compare);
 
 } 

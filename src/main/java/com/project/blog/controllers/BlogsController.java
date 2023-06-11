@@ -23,8 +23,8 @@ public class BlogsController {
         return blogService.saveBlog(blogCreateRequest,Authorization);
     }
     @GetMapping("/delete")
-    public void deleteBlogs(@RequestParam long id){
-        blogService.deleteBlog(id);
+    public ErrorSuccessResponse deleteBlogs(@RequestParam long blogid,@RequestHeader String Authorization){
+        return blogService.deleteBlog(blogid,Authorization);
     }
 
     @GetMapping("/getblogs")

@@ -1,5 +1,7 @@
 package com.project.blog.entities;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
@@ -26,6 +28,9 @@ public class User {
 	@JsonIgnore
 	String email;
 	String userphoto;
+
+	@JsonIgnore
+	LocalDateTime blocked;
 
 	@OneToMany(mappedBy = "user",cascade = {CascadeType.ALL})
 	@JsonIgnore
