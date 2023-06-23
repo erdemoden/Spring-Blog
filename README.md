@@ -6,4 +6,8 @@ backend tarafında spring boot kullanıldı database için mysql seçildi databa
 
 # Uygulamadan Resimler
 
-![](deneme.gif)
+![deneme-min](https://github.com/erdemoden/Spring-Blog/assets/53904841/8b2b2a19-8b03-42ea-a3eb-371210094ba2)
+
+kullanıcı giriş kısımı 
+
+
