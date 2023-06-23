@@ -10,4 +10,7 @@ backend tarafında spring boot kullanıldı database için mysql seçildi databa
 
 kullanıcı giriş kısımı 
 
+![deneme2](https://github.com/erdemoden/Spring-Blog/assets/53904841/c8cdf554-2e04-49cb-9de6-960670ef7011)
+
+kullanıcı post listeleme kısımı beğenme ve yorumları görme
 
